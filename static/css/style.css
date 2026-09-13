@@ -1,0 +1,195 @@
+:root {
+    --bg-dark: #0f172a;
+    --bg-panel: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --color-low: #10b981;
+    --color-medium: #f59e0b;
+    --color-high: #ef4444;
+    --color-info: #3b82f6;
+}
+
+body.dark-theme {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header-nav {
+    background-color: #0b1120;
+    border-bottom: 1px solid #334155;
+    padding: 10px 20px;
+}
+
+.sidebar {
+    background-color: #0f172a;
+    border-right: 1px solid #334155;
+    min-height: calc(100vh - 60px);
+}
+
+.sidebar .nav-link {
+    color: var(--text-muted);
+    padding: 12px 20px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    color: var(--text-main);
+    background-color: var(--bg-panel);
+}
+
+.bg-panel {
+    background-color: var(--bg-panel);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: rgba(0,0,0,0.2);
+    border-bottom: 1px solid #334155;
+    font-weight: bold;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s;
+}
+
+.view-section.active-section {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.risk-text {
+    transition: color 0.5s;
+}
+
+.progress {
+    background-color: #334155;
+}
+
+/* Mesh Network Vis */
+.mesh-visualization {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.mesh-visualization .node {
+    background-color: rgba(255,255,255,0.05);
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    width: 250px;
+}
+
+/* Utilities */
+.blink {
+    animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+.status-active {
+    color: var(--color-low);
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: var(--color-high);
+    font-weight: bold;
+}
+
+.demo-controls {
+    border-left: 4px solid var(--color-info);
+}
+
+/* Leaflet Map overrides for dark theme */
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+.explain-bar-container {
+    margin-bottom: 10px;
+}
+.explain-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin-bottom: 2px;
+}
+.explain-progress {
+    height: 8px;
+    background-color: #334155;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.explain-fill {
+    height: 100%;
+    background-color: var(--color-info);
+}
+.explain-desc {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+/* ===== Risk Level Text Fix ===== */
+
+#risk-display-level {
+    color: #ffffff !important;
+}
+
+#risk-display-prob {
+    color: #ffffff !important;
+}
+
+#sec-dashboard .risk-text {
+    color: #ffffff !important;
+}
+
+/* ===== Early Warning System Text Fix ===== */
+
+#warning-card #warning-content h4,
+#warning-card #warning-content p,
+#warning-card #warning-content i {
+    color: #00ff88 !important;
+}
+
+#warning-card h5,
+#warning-card li {
+    color: #ffffff !important;
+}
+/* Final visibility fix for risk level */
+#risk-display-level,
+#risk-display-prob,
+#risk-display-level + h4,
+#risk-display-level + h4 span {
+    color: white !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+/* Location and Time visibility fix */
+#risk-display-level ~ div,
+#risk-display-level ~ div p,
+#risk-display-level ~ div p strong,
+#risk-display-level ~ div p span,
+.current-time-display {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
