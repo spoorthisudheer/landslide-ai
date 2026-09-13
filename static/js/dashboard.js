@@ -4,6 +4,33 @@ let currentRiskProb = 0;
 let mainMap, previewMap;
 let forecastChart;
 
+// Simulated monitoring locations
+const monitoringLocations = [
+    {
+        name: "Kodagu, Karnataka",
+        coordinates: [12.3375, 75.8069]
+    },
+    {
+        name: "Wayanad, Kerala",
+        coordinates: [11.6854, 76.1320]
+    },
+    {
+        name: "Idukki, Kerala",
+        coordinates: [9.9189, 76.9685]
+    },
+    {
+        name: "Nilgiris, Tamil Nadu",
+        coordinates: [11.4102, 76.6950]
+    },
+    {
+        name: "Darjeeling, West Bengal",
+        coordinates: [27.0410, 88.2663]
+    }
+];
+
+let currentLocationIndex = 0;
+let currentLocation = monitoringLocations[0];
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     updateTime();
@@ -12,8 +39,36 @@ document.addEventListener('DOMContentLoaded', () => {
     initMaps();
     initChart();
     
-    // Initial fetch of sensor data
-    fetchSensorData();
+    // Initial sensor data load without changing location
+    loadInitialSensorData();
+    
+function loadInitialSensorData() {
+    fetch('/sensor-data')
+        .then(res => res.json())
+        .then(data => {
+
+            document.getElementById('env-rain').textContent = data.rainfall;
+            document.getElementById('env-moist').textContent = data.soil_moisture;
+            document.getElementById('env-slope').textContent = data.slope;
+            document.getElementById('env-temp').textContent = data.temperature;
+            document.getElementById('env-hum').textContent = data.humidity;
+
+            document.getElementById('input-rain').value = data.rainfall;
+            document.getElementById('input-moist').value = data.soil_moisture;
+            document.getElementById('input-slope').value = data.slope;
+            document.getElementById('input-temp').value = data.temperature;
+            document.getElementById('input-hum').value = data.humidity;
+            document.getElementById('input-elev').value = data.elevation;
+
+            // Keep initial location as Kodagu
+            document.querySelectorAll('.location-display').forEach(el => {
+                el.textContent = currentLocation.name;
+            });
+
+            updateMapRisk(currentRiskLevel);
+        })
+        .catch(err => console.error("Error fetching initial sensor data", err));
+}
     
     // Setup Sidebar Nav
     document.querySelectorAll('.sidebar .nav-link').forEach(link => {
@@ -74,39 +129,52 @@ let mapLayerGroupMain = L.layerGroup();
 let mapLayerGroupPrev = L.layerGroup();
 
 function updateMapRisk(level) {
-    const center = [12.3375, 75.8069];
-    
+    const center = currentLocation.coordinates;
+    const locationName = currentLocation.name;
+
     if(mainMap) {
         mapLayerGroupMain.clearLayers();
         mapLayerGroupMain.addTo(mainMap);
     }
+
     if(previewMap) {
         mapLayerGroupPrev.clearLayers();
         mapLayerGroupPrev.addTo(previewMap);
     }
-    
+
     let color = '#10b981'; // LOW
     if(level === 'MEDIUM') color = '#f59e0b';
     if(level === 'HIGH') color = '#ef4444';
-    
+
     const radius = level === 'HIGH' ? 8000 : 5000;
-    
+
     const circleMain = L.circle(center, {
         color: color,
         fillColor: color,
         fillOpacity: 0.4,
         radius: radius
-    }).bindPopup(`<b>Location:</b> Kodagu<br><b>Risk Status:</b> ${level}`);
-    
+    }).bindPopup(
+        `<b>Location:</b> ${locationName}<br><b>Risk Status:</b> ${level}`
+    );
+
     const circlePrev = L.circle(center, {
         color: color,
         fillColor: color,
         fillOpacity: 0.4,
         radius: radius
     });
-    
+
     mapLayerGroupMain.addLayer(circleMain);
     mapLayerGroupPrev.addLayer(circlePrev);
+
+    // Move both maps to the new monitoring location
+    if(mainMap) {
+        mainMap.setView(center, 11);
+    }
+
+    if(previewMap) {
+        previewMap.setView(center, 10);
+    }
 }
 
 // Initialize Chart
@@ -195,27 +263,52 @@ function loadScenario(type) {
 
 // Fetch Sensor Data (Simulated)
 function fetchSensorData() {
+
+    // Move to the next monitoring location
+    currentLocationIndex =
+        (currentLocationIndex + 1) % monitoringLocations.length;
+
+    currentLocation = monitoringLocations[currentLocationIndex];
+
     fetch('/sensor-data')
         .then(res => res.json())
         .then(data => {
-            // Update Dashboard env parameters
+
+            // Update Dashboard environmental parameters
             document.getElementById('env-rain').textContent = data.rainfall;
             document.getElementById('env-moist').textContent = data.soil_moisture;
             document.getElementById('env-slope').textContent = data.slope;
             document.getElementById('env-temp').textContent = data.temperature;
             document.getElementById('env-hum').textContent = data.humidity;
-            
-            // Also populate prediction inputs for convenience
+
+            // Populate prediction inputs
             document.getElementById('input-rain').value = data.rainfall;
             document.getElementById('input-moist').value = data.soil_moisture;
             document.getElementById('input-slope').value = data.slope;
             document.getElementById('input-temp').value = data.temperature;
             document.getElementById('input-hum').value = data.humidity;
             document.getElementById('input-elev').value = data.elevation;
-        })
-        .catch(err => console.error("Error fetching sensor data", err));
-}
 
+            // Update location text on dashboard
+            const locationElements =
+                document.querySelectorAll('.location-display');
+
+            locationElements.forEach(el => {
+                el.textContent = currentLocation.name;
+            });
+
+            // Update the map
+            updateMapRisk(currentRiskLevel);
+
+            console.log(
+                "Sensor update:",
+                currentLocation.name
+            );
+        })
+        .catch(err =>
+            console.error("Error fetching sensor data", err)
+        );
+}
 // Submit Prediction
 function submitPrediction() {
     const data = {
