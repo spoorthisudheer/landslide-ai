@@ -193,3 +193,15 @@ body.dark-theme {
     opacity: 1 !important;
     visibility: visible !important;
 }
+/* Risk level colors */
+.risk-text.risk-low {
+    color: #22c55e !important;
+}
+
+.risk-text.risk-medium {
+    color: #f59e0b !important;
+}
+
+.risk-text.risk-high {
+    color: #ef4444 !important;
+}
