@@ -205,3 +205,147 @@ body.dark-theme {
 .risk-text.risk-high {
     color: #ef4444 !important;
 }
+/* =========================================
+   ENVIRONMENTAL CONDITIONS - VALUE VISIBILITY
+   ========================================= */
+
+#env-rain,
+#env-moist,
+#env-slope,
+#env-temp,
+#env-hum {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}
+
+/* Environmental condition rows */
+.bg-panel .list-group-item {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #d1d5db !important;
+}
+
+/* Environmental labels */
+.bg-panel .list-group-item div {
+    color: #1e293b !important;
+}
+
+/* Units: mm, %, °, °C */
+.bg-panel .list-group-item > div:last-child {
+    color: #475569 !important;
+}
+
+/* Actual sensor values */
+#env-rain,
+#env-moist,
+#env-slope,
+#env-temp,
+#env-hum {
+    color: #2563eb !important;
+    background-color: transparent !important;
+    font-weight: 800 !important;
+    font-size: 16px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}
+/* Risk Alert Threshold */
+.threshold-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+}
+
+#thresholdValue {
+    display: inline-block !important;
+    min-width: 70px;
+    padding: 6px 14px;
+    text-align: center;
+
+    /* High contrast */
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+
+    border: 2px solid #2563eb;
+    border-radius: 8px;
+
+    font-size: 18px !important;
+    font-weight: 800 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+/* Risk threshold slider */
+#riskThreshold {
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+#riskThreshold::-webkit-slider-thumb {
+    background-color: #2563eb !important;
+}
+
+#riskThreshold::-moz-range-thumb {
+    background-color: #2563eb !important;
+}
+/* Make Risk Alert Threshold percentage clearly visible */
+
+.threshold-display {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 12px 0 !important;
+}
+
+#thresholdValue {
+    display: inline-block !important;
+
+    background-color: #ffffff !important;
+    color: #111827 !important;
+
+    min-width: 80px !important;
+    padding: 8px 14px !important;
+
+    border: 2px solid #2563eb !important;
+    border-radius: 8px !important;
+
+    text-align: center !important;
+    font-size: 20px !important;
+    font-weight: 800 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+/* Risk Alert Threshold percentage */
+.threshold-display {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 15px 0 !important;
+}
+
+#thresholdValue {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    width: 90px !important;
+    height: 45px !important;
+
+    background-color: white !important;
+    color: black !important;
+
+    border: 3px solid #2563eb !important;
+    border-radius: 8px !important;
+
+    font-size: 22px !important;
+    font-weight: 900 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+}

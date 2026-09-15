@@ -456,9 +456,26 @@
                               <label class="form-check-label" for="alertToggle">Enable Alert Notifications</label>
                             </div>
                             <div class="mb-3">
-                              <label for="riskThreshold" class="form-label">Risk Alert Threshold (%)</label>
-                              <input type="range" class="form-range" id="riskThreshold" min="0" max="100" value="70">
+                            <label for="riskThreshold" class="form-label">
+                                Risk Alert Threshold (%)
+                            </label>
+
+                            <div class="threshold-display">
+                            <div class="threshold-display">
+                            <span id="thresholdValue" style="color: black !important; background-color: white !important; font-size: 22px !important; font-weight: bold !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; padding: 5px 10px !important;">70%</span>
                             </div>
+                            </div>
+
+                            <input
+                                type="range"
+                                class="form-range"
+                                id="riskThreshold"
+                                min="0"
+                                max="100"
+                                value="70"
+                            oninput="document.getElementById('thresholdValue').textContent = this.value + '%'"
+                           
+                            >
                          </div>
                      </div>
                 </section>
