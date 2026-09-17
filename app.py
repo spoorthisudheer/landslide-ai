@@ -18,6 +18,12 @@ network_status = {
     'internet': 'ACTIVE',
     'mesh': 'ACTIVE'
 }
+# ============================================================
+# MESH COMMUNICATION DEMO STATE
+# ============================================================
+
+mesh_packet_count = 0
+latest_mesh_data = {}
 
 @app.route('/')
 def index():
@@ -118,6 +124,67 @@ def simulate_network():
 @app.route('/network-status', methods=['GET'])
 def get_network_status():
     return jsonify(network_status)
+
+
+# ============================================================
+# MESH COMMUNICATION API
+# ============================================================
+
+@app.route('/api/mesh-data', methods=['POST'])
+def receive_mesh_data():
+    global mesh_packet_count, latest_mesh_data
+
+    try:
+        data = request.get_json()
+
+        if not data:
+            return jsonify({
+                'status': 'error',
+                'message': 'No mesh data received'
+            }), 400
+
+        mesh_packet_count += 1
+        latest_mesh_data = data
+
+        print("========================================")
+        print("MESH PACKET RECEIVED")
+        print("Node:", data.get('node_id'))
+        print("Location:", data.get('location'))
+        print("Rainfall:", data.get('rainfall'))
+        print("Soil Moisture:", data.get('soil_moisture'))
+        print("Slope:", data.get('slope'))
+        print("Packet:", mesh_packet_count)
+        print("========================================")
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Mesh sensor data received',
+            'packet_count': mesh_packet_count,
+            'node_id': data.get('node_id'),
+            'location': data.get('location')
+        })
+
+    except Exception as e:
+
+        print("Mesh communication error:", e)
+
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/mesh-status', methods=['GET'])
+def get_mesh_status():
+
+    return jsonify({
+        'mesh': 'ACTIVE',
+        'gateway': 'ONLINE',
+        'nodes': 3,
+        'packets_received': mesh_packet_count,
+        'latest_packet': latest_mesh_data
+    })
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

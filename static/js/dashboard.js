@@ -2234,3 +2234,411 @@ function generateReport() {
     });
 
 }
+
+// ============================================================
+// ADDED: MESH COMMUNICATION SIMULATION
+// ============================================================
+
+let meshDemoPacketCount = 0;
+
+const meshDemoNodes = [
+    "NODE_01",
+    "NODE_02",
+    "NODE_03"
+];
+
+let meshDemoNodeIndex = 0;
+
+
+// ============================================================
+// SIMULATE MESH SENSOR UPDATE
+// ============================================================
+
+function simulateMeshSensorUpdate() {
+
+    const nodeId =
+        meshDemoNodes[meshDemoNodeIndex];
+
+    meshDemoNodeIndex =
+        (meshDemoNodeIndex + 1) % meshDemoNodes.length;
+
+
+    const packet = {
+
+        node_id: nodeId,
+
+        location: currentLocation.name,
+
+        rainfall:
+            Number((Math.random() * 120 + 20).toFixed(1)),
+
+        soil_moisture:
+            Number((Math.random() * 45 + 35).toFixed(1)),
+
+        slope:
+            Number((Math.random() * 25 + 15).toFixed(1)),
+
+        temperature:
+            Number((Math.random() * 12 + 20).toFixed(1)),
+
+        humidity:
+            Number((Math.random() * 30 + 60).toFixed(1)),
+
+        elevation: 1240,
+
+        timestamp:
+            new Date().toLocaleTimeString()
+    };
+
+
+    // Send sensor packet to Flask
+
+    fetch('/api/mesh-data', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify(packet)
+
+    })
+
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error('Mesh server error');
+        }
+
+        return response.json();
+
+    })
+
+    .then(result => {
+
+        console.log(
+            'Mesh packet received:',
+            result
+        );
+
+
+        // Packet count
+
+        meshDemoPacketCount =
+            result.packet_count;
+
+
+        const packetCount =
+            document.getElementById(
+                'mesh-packet-count'
+            );
+
+        if (packetCount) {
+
+            packetCount.textContent =
+                meshDemoPacketCount;
+
+            packetCount.classList.remove(
+                'mesh-packet-animation'
+            );
+
+            void packetCount.offsetWidth;
+
+            packetCount.classList.add(
+                'mesh-packet-animation'
+            );
+        }
+
+
+        // Last node
+
+        const lastNode =
+            document.getElementById(
+                'mesh-last-node'
+            );
+
+        if (lastNode) {
+            lastNode.textContent =
+                packet.node_id;
+        }
+
+
+        // Last location
+
+        const lastLocation =
+            document.getElementById(
+                'mesh-last-location'
+            );
+
+        if (lastLocation) {
+            lastLocation.textContent =
+                packet.location;
+        }
+
+
+        // Sensor values
+
+        const rainfall =
+            document.getElementById(
+                'mesh-rainfall'
+            );
+
+        const soil =
+            document.getElementById(
+                'mesh-soil'
+            );
+
+        const slope =
+            document.getElementById(
+                'mesh-slope'
+            );
+
+        const temperature =
+            document.getElementById(
+                'mesh-temperature'
+            );
+
+        const humidity =
+            document.getElementById(
+                'mesh-humidity'
+            );
+
+
+        if (rainfall)
+            rainfall.textContent =
+                packet.rainfall;
+
+        if (soil)
+            soil.textContent =
+                packet.soil_moisture;
+
+        if (slope)
+            slope.textContent =
+                packet.slope;
+
+        if (temperature)
+            temperature.textContent =
+                packet.temperature;
+
+        if (humidity)
+            humidity.textContent =
+                packet.humidity;
+
+
+        // Success message
+
+        const message =
+            document.getElementById(
+                'mesh-packet-message'
+            );
+
+        if (message) {
+
+            message.className =
+                'alert alert-success mt-3';
+
+            message.innerHTML = `
+
+                <i class="fa-solid fa-circle-check me-2"></i>
+
+                <strong>Mesh packet received successfully.</strong>
+
+                ${packet.node_id}
+                → Mesh Gateway
+                → Flask Server
+
+            `;
+        }
+
+
+        // Animate node
+
+        animateMeshNode(packet.node_id);
+
+    })
+
+    .catch(error => {
+
+        console.error(
+            'Mesh communication error:',
+            error
+        );
+
+
+        const message =
+            document.getElementById(
+                'mesh-packet-message'
+            );
+
+        if (message) {
+
+            message.className =
+                'alert alert-danger mt-3';
+
+            message.innerHTML = `
+
+                <i class="fa-solid fa-circle-xmark me-2"></i>
+
+                Mesh packet could not reach the gateway.
+
+            `;
+        }
+
+    });
+
+}
+
+
+// ============================================================
+// ANIMATE MESH NODE
+// ============================================================
+
+function animateMeshNode(nodeId) {
+
+    let nodeNumber = '1';
+
+    if (nodeId === 'NODE_02') {
+        nodeNumber = '2';
+    }
+
+    else if (nodeId === 'NODE_03') {
+        nodeNumber = '3';
+    }
+
+
+    const nodeStatus =
+        document.getElementById(
+            'mesh-node-' +
+            nodeNumber +
+            '-status'
+        );
+
+    if (!nodeStatus) {
+        return;
+    }
+
+
+    nodeStatus.textContent =
+        'PACKET SENT';
+
+    nodeStatus.className =
+        'badge bg-primary';
+
+
+    setTimeout(() => {
+
+        nodeStatus.textContent =
+            'ONLINE';
+
+        nodeStatus.className =
+            'badge bg-success';
+
+    }, 1000);
+
+}
+
+
+// ============================================================
+// LOAD MESH STATUS
+// ============================================================
+
+function loadMeshStatus() {
+
+    fetch('/api/mesh-status')
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Mesh status unavailable'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            const packetCount =
+                document.getElementById(
+                    'mesh-packet-count'
+                );
+
+            if (packetCount) {
+
+                packetCount.textContent =
+                    data.packets_received || 0;
+
+            }
+
+
+            const meshStatus =
+                document.getElementById(
+                    'mesh-demo-status'
+                );
+
+            if (meshStatus) {
+
+                meshStatus.textContent =
+                    data.mesh;
+
+                meshStatus.className =
+                    data.mesh === 'ACTIVE'
+                        ? 'badge bg-success'
+                        : 'badge bg-danger';
+
+            }
+
+
+            const gatewayStatus =
+                document.getElementById(
+                    'mesh-gateway-status'
+                );
+
+            if (gatewayStatus) {
+
+                gatewayStatus.textContent =
+                    data.gateway;
+
+                gatewayStatus.className =
+                    data.gateway === 'ONLINE'
+                        ? 'badge bg-success'
+                        : 'badge bg-danger';
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                'Mesh status error:',
+                error
+            );
+
+        });
+
+}
+
+
+// ============================================================
+// CHECK MESH STATUS EVERY 5 SECONDS
+// ============================================================
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        loadMeshStatus();
+
+        setInterval(
+            loadMeshStatus,
+            5000
+        );
+
+    }
+);
